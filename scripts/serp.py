@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
-import sys
-import json
 import requests
+import json
 
 def scrape_google(query):
     # Préparer l'URL de recherche
@@ -26,13 +25,14 @@ def scrape_google(query):
     for g in soup.find_all('div', class_='tF2Cxc'):
         title = g.find('h3').text if g.find('h3') else None
         link = g.find('a')['href'] if g.find('a') else None
-        description = g.find('span', class_='aCOpRe').text if g.find('span', class_='aCOpRe') else None
+        description = g.find('span', class_='aCOpRe').text if g.find('span', 'aCOpRe') else None
         if title and link:
             results.append({'title': title, 'link': link, 'description': description})
     
     return {"query": query, "results": results}
 
 if __name__ == "__main__":
+    import sys
     if len(sys.argv) < 2:
         print(json.dumps({"error": "Missing query parameter"}))
         sys.exit(1)

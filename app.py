@@ -3,6 +3,7 @@ import logging
 import json
 from scripts.recup_urls import recup_urls
 from scripts.analyse_seo import process_csv
+from scripts.serp import scrape_google  # Assurez-vous que ceci est correct
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -11,15 +12,6 @@ logging.basicConfig(level=logging.DEBUG)
 def home():
     app.logger.debug("Home route accessed")
     return "Bienvenue à mon API Flask!"
-
-@app.route('/api/search', methods=['GET'])
-def search_google():
-    app.logger.debug("serp route accessed")
-    query = request.args.get('query')
-    if not query:
-        return jsonify({"error": "Missing query parameter 'query'"}), 400
-    results = scrape_google(query)
-    return jsonify(results)
 
 @app.route('/api/recup_urls', methods=['GET'])
 def get_urls():
@@ -30,15 +22,24 @@ def get_urls():
     result = recup_urls(domain)
     return jsonify(result)
 
-@app.route('/api/analyse_seo', methods=['POST'])
+@app.route('/api/analyze', methods=['POST'])
 def analyze_csv():
-    app.logger.debug("test route accessed")
+    app.logger.debug("analyze_csv route accessed")
     if 'csv_file' not in request.files:
         return jsonify({"error": "Missing file parameter 'csv_file'"}), 400
     file = request.files['csv_file']
     input_csv = file.read().decode('utf-8')
     result = process_csv(input_csv)
     return jsonify(result)
+
+@app.route('/api/search', methods=['GET'])
+def search_google():
+    app.logger.debug("search_google route accessed")
+    query = request.args.get('query')
+    if not query:
+        return jsonify({"error": "Missing query parameter 'query'"}), 400
+    results = scrape_google(query)
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
