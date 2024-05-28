@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 def seo_audit(url, content):
-    soup = BeautifulSoup(content, 'html.parser')  # Changement du parser
+    soup = BeautifulSoup(content, 'html.parser')
 
     # Extraire le domaine de l'URL
     parsed_url = urlparse(url)
@@ -26,66 +26,66 @@ def seo_audit(url, content):
     word_count = len(content.split())
 
     # Erreurs
-    multiple_h1 = len(h1_tags) > 1
-    missing_h1 = len(h1_tags) == 0
-    h2_without_h1 = len(h2_tags) > 0 and len(h1_tags) == 0
-    low_word_count = word_count < 200
-    missing_title = title_tag is None
-    no_links = len(links) == 0
-
-    # Avertissements
-    missing_h2 = len(h2_tags) == 0
-    h3_without_h2 = len(h3_tags) > 0 and len(h2_tags) == 0
-    title_too_long = title_tag and len(title_tag.text) > 70
-    missing_description = description_tag is None
-    description_too_long = description_tag and len(description_tag.get('content', '')) > 160
-    missing_canonical = canonical_tag is None
-    no_internal_links = len(internal_links) == 0
-
-    # Avis
-    missing_h3 = len(h3_tags) == 0
-    h4_without_h3 = len(h4_tags) > 0 and len(h3_tags) == 0
-    h5_without_h4 = len(h5_tags) > 0 and len(h4_tags) == 0
-    h6_without_h5 = len(h6_tags) > 0 and len(h5_tags) == 0
-    title_too_short = title_tag and len(title_tag.text) < 20
-    description_too_short = description_tag and len(description_tag.get('content', '')) < 50
-    url_too_long = len(url) > 70
-    canonical_too_long = canonical_tag and len(canonical_tag.get('href', '')) > 70
-    no_images = len(images) == 0
-    missing_alt = any(img.get('alt') is None for img in images)
-    empty_alt = any(img.get('alt') == '' for img in images)
-    no_external_links = len(external_links) == 0
-
     errors = {
-        'multiple_h1': multiple_h1,
-        'missing_h1': missing_h1,
-        'h2_without_h1': h2_without_h1,
-        'low_word_count': low_word_count,
-        'missing_title': missing_title,
-        'no_links': no_links,
-        'missing_h2': missing_h2,
-        'h3_without_h2': h3_without_h2,
-        'title_too_long': title_too_long,
-        'missing_description': missing_description,
-        'description_too_long': description_too_long,
-        'missing_canonical': missing_canonical,
-        'no_internal_links': no_internal_links,
-        'missing_h3': missing_h3,
-        'h4_without_h3': h4_without_h3,
-        'h5_without_h4': h5_without_h4,
-        'h6_without_h5': h6_without_h5,
-        'title_too_short': title_too_short,
-        'description_too_short': description_too_short,
-        'url_too_long': url_too_long,
-        'canonical_too_long': canonical_too_long,
-        'no_images': no_images,
-        'missing_alt': missing_alt,
-        'empty_alt': empty_alt,
-        'no_external_links': no_external_links
+        'erreur': [],
+        'avertissement': [],
+        'avis': []
     }
 
-    # Retourner uniquement les erreurs
-    return {key: value for key, value in errors.items() if value}
+    if len(h1_tags) > 1:
+        errors['erreur'].append('multiple_h1')
+    if len(h1_tags) == 0:
+        errors['erreur'].append('missing_h1')
+    if len(h2_tags) > 0 and len(h1_tags) == 0:
+        errors['erreur'].append('h2_without_h1')
+    if word_count < 200:
+        errors['erreur'].append('low_word_count')
+    if title_tag is None:
+        errors['erreur'].append('missing_title')
+    if len(links) == 0:
+        errors['erreur'].append('no_links')
+
+    if len(h2_tags) == 0:
+        errors['avertissement'].append('missing_h2')
+    if len(h3_tags) > 0 and len(h2_tags) == 0:
+        errors['avertissement'].append('h3_without_h2')
+    if title_tag and len(title_tag.text) > 70:
+        errors['avertissement'].append('title_too_long')
+    if description_tag is None:
+        errors['avertissement'].append('missing_description')
+    if description_tag and len(description_tag.get('content', '')) > 160:
+        errors['avertissement'].append('description_too_long')
+    if canonical_tag is None:
+        errors['avertissement'].append('missing_canonical')
+    if len(internal_links) == 0:
+        errors['avertissement'].append('no_internal_links')
+
+    if len(h3_tags) == 0:
+        errors['avis'].append('missing_h3')
+    if len(h4_tags) > 0 and len(h3_tags) == 0:
+        errors['avis'].append('h4_without_h3')
+    if len(h5_tags) > 0 and len(h4_tags) == 0:
+        errors['avis'].append('h5_without_h4')
+    if len(h6_tags) > 0 and len(h5_tags) == 0:
+        errors['avis'].append('h6_without_h5')
+    if title_tag and len(title_tag.text) < 20:
+        errors['avis'].append('title_too_short')
+    if description_tag and len(description_tag.get('content', '')) < 50:
+        errors['avis'].append('description_too_short')
+    if len(url) > 70:
+        errors['avis'].append('url_too_long')
+    if canonical_tag and len(canonical_tag.get('href', '')) > 70:
+        errors['avis'].append('canonical_too_long')
+    if len(images) == 0:
+        errors['avis'].append('no_images')
+    if any(img.get('alt') is None for img in images):
+        errors['avis'].append('missing_alt')
+    if any(img.get('alt') == '' for img in images):
+        errors['avis'].append('empty_alt')
+    if len(external_links) == 0:
+        errors['avis'].append('no_external_links')
+
+    return errors
 
 def analyze_and_report(url):
     try:
@@ -93,7 +93,7 @@ def analyze_and_report(url):
         response.raise_for_status()
         content = response.text
         errors = seo_audit(url, content)
-        if not errors:
+        if not any(errors.values()):
             return {"errors": ["aucune erreur n'a été détectée"]}
         return {"errors": errors}
     except requests.RequestException as e:
