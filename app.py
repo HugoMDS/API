@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 import logging
-import subprocess
 import json
+from scripts.serp import scrape_google
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -17,11 +17,8 @@ def run_search():
     query = request.args.get('query')
     if not query:
         return jsonify({"error": "Missing query parameter"}), 400
-    result = subprocess.run(['python3', 'scripts/serp.py', query], capture_output=True, text=True)
-    if result.returncode != 0:
-        return jsonify({"error": result.stderr}), 500
-    response_data = json.loads(result.stdout)
-    return jsonify(response_data)
+    results = scrape_google(query)
+    return jsonify(results)
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
