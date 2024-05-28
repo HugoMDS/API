@@ -27,7 +27,7 @@ def get_urls():
 
 @app.route('/api/analyse', methods=['POST'])
 def analyze_csv():
-    app.logger.debug("analyzs_csv route accessed")
+    app.logger.debug("analyse_csv route accessed")
     if 'csv_file' not in request.files:
         return jsonify({"error": "Missing file parameter 'csv_file'"}), 400
     file = request.files['csv_file']

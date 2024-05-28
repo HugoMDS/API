@@ -5,24 +5,21 @@ from xml.etree import ElementTree as ET
 from io import StringIO
 
 def get_sitemaps_from_robots(robots_url):
-    response = requests.get(robots_url)
-    if response.status_code != 200:
-        print(f"Erreur lors de la récupération du fichier robots.txt: {response.status_code}")
+    try:
+        response = requests.get(robots_url, timeout=5)
+        response.raise_for_status()
+        sitemaps = re.findall(r'Sitemap\s*:\s*(https?://\S+)', response.text, re.IGNORECASE)
+        return sitemaps
+    except requests.RequestException as e:
+        print(f"Erreur lors de la récupération du fichier robots.txt: {e}")
         return []
-    
-    sitemaps = re.findall(r'Sitemap\s*:\s*(https?://\S+)', response.text, re.IGNORECASE)
-    return sitemaps
 
 def get_urls_from_sitemap(sitemap_url):
-    response = requests.get(sitemap_url)
-    if response.status_code != 200:
-        print(f"Erreur lors de la récupération du sitemap: {response.status_code}")
-        return [], []
-    
-    urls = []
-    sitemaps = []
-    
     try:
+        response = requests.get(sitemap_url, timeout=5)
+        response.raise_for_status()
+        urls = []
+        sitemaps = []
         tree = ET.fromstring(response.content)
         for elem in tree:
             if elem.tag.endswith('url'):
@@ -33,26 +30,22 @@ def get_urls_from_sitemap(sitemap_url):
                 for subelem in elem:
                     if subelem.tag.endswith('loc'):
                         sitemaps.append(subelem.text)
-    except ET.ParseError as e:
-        print(f"Erreur lors de l'analyse du sitemap: {e}")
-    
-    return urls, sitemaps
+        return urls, sitemaps
+    except (requests.RequestException, ET.ParseError) as e:
+        print(f"Erreur lors de la récupération ou de l'analyse du sitemap: {e}")
+        return [], []
 
 def fetch_all_urls(domain):
     robots_url = f"https://{domain}/robots.txt"
-    
     sitemaps = get_sitemaps_from_robots(robots_url)
-    
     if not sitemaps:
         sitemaps.append(f"https://{domain}/sitemap.xml")
-    
     all_urls = set()
     while sitemaps:
         sitemap = sitemaps.pop()
         urls, nested_sitemaps = get_urls_from_sitemap(sitemap)
         all_urls.update(urls)
         sitemaps.extend(nested_sitemaps)
-    
     return sorted(all_urls)
 
 def generate_csv(urls):
