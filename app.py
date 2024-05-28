@@ -11,8 +11,9 @@ logging.basicConfig(level=logging.DEBUG)
 # Fonction pour installer les dépendances
 def install_dependencies():
     try:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'])
-        subprocess.check_call([sys.executable, '-m', 'pip3', 'install', '-r', 'requirements.txt'])
+        with open('/tmp/install_log.txt', 'w') as f:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'], stdout=f, stderr=f)
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], stdout=f, stderr=f)
     except subprocess.CalledProcessError as e:
         app.logger.error(f"Error installing dependencies: {e}")
         sys.exit(1)
