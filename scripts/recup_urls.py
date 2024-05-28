@@ -24,7 +24,7 @@ def fetch_urls_from_sitemap(sitemap_url):
     try:
         response = requests.get(sitemap_url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'lxml')  # Utiliser le parser lxml
+        soup = BeautifulSoup(response.text, 'html.parser')  # Utiliser le parser html.parser
         urls = [loc.text for loc in soup.find_all('loc')]
         return urls
     except requests.RequestException:
