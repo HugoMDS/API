@@ -3,7 +3,7 @@ import logging
 import json
 from scripts.recup_urls import recup_urls
 from scripts.analyse_seo import process_csv
-from scripts.serp import scrape_google  # Assurez-vous que ceci est correct
+from scripts.serp import scrape_google
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)

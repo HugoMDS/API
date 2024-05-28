@@ -1,8 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-import base64
-from io import StringIO, BytesIO
+from io import StringIO
 
 def fetch_sitemap_urls(domain):
     robots_url = f"https://{domain}/robots.txt"
@@ -24,7 +23,7 @@ def fetch_urls_from_sitemap(sitemap_url):
     try:
         response = requests.get(sitemap_url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')  # Utiliser le parser html.parser
+        soup = BeautifulSoup(response.text, 'html.parser')
         urls = [loc.text for loc in soup.find_all('loc')]
         return urls
     except requests.RequestException:
@@ -38,17 +37,10 @@ def generate_csv(urls):
         writer.writerow([url])
     return output.getvalue()
 
-def encode_to_base64(data):
-    binary = BytesIO()
-    binary.write(data.encode('utf-8'))
-    binary.seek(0)
-    return base64.b64encode(binary.read()).decode('utf-8')
-
 def recup_urls(domain):
     sitemap_urls = fetch_sitemap_urls(domain)
     all_urls = []
     for sitemap_url in sitemap_urls:
         all_urls.extend(fetch_urls_from_sitemap(sitemap_url))
     csv_data = generate_csv(all_urls)
-    encoded_csv = encode_to_base64(csv_data)
-    return {"csv_data": encoded_csv}
+    return {"csv_data": csv_data}
