@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 def seo_audit(url, content):
-    soup = BeautifulSoup(content, 'lxml')
+    soup = BeautifulSoup(content, 'html.parser')  # Changement du parser
 
     # Extraire le domaine de l'URL
     parsed_url = urlparse(url)
