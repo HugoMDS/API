@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_file
+from flask import Flask, jsonify, request
 import logging
 import subprocess
 import json
@@ -11,11 +11,10 @@ logging.basicConfig(level=logging.DEBUG)
 # Fonction pour installer les dépendances
 def install_dependencies():
     try:
-        with open('/tmp/install_log.txt', 'w') as f:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'], stdout=f, stderr=f)
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], stdout=f, stderr=f)
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'])
+        subprocess.check_call([sys.executable, '-m', 'pip3', 'install', '-r', 'requirements.txt'])
     except subprocess.CalledProcessError as e:
-        print(f"Error installing dependencies: {e}")
+        app.logger.error(f"Error installing dependencies: {e}")
         sys.exit(1)
 
 # Appeler la fonction pour installer les dépendances
@@ -37,13 +36,6 @@ def run_search():
         return jsonify({"error": result.stderr}), 500
     response_data = json.loads(result.stdout)
     return jsonify(response_data)
-
-@app.route('/logs')
-def get_logs():
-    try:
-        return send_file('/tmp/install_log.txt')
-    except FileNotFoundError:
-        return "Log file not found", 404
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
