@@ -2,19 +2,6 @@ from flask import Flask, jsonify, request
 import logging
 import subprocess
 import json
-import sys
-
-# Fonction pour installer les dépendances
-def install_dependencies():
-    try:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'])
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'])
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing dependencies: {e}")
-        sys.exit(1)
-
-# Appeler la fonction pour installer les dépendances
-install_dependencies()
 
 app = Flask(__name__)
 
