@@ -52,4 +52,4 @@ def generate_csv(urls):
 def recup_urls(domain):
     all_urls = fetch_all_urls(domain)
     csv_data = generate_csv(all_urls)
-    return {"csv_data": csv_data}
+    return csv_data
