@@ -29,6 +29,18 @@ def fetch_urls_from_sitemap(sitemap_url):
     except requests.RequestException:
         return []
 
+def fetch_all_urls(domain):
+    sitemap_urls = fetch_sitemap_urls(domain)
+    all_urls = []
+    for sitemap_url in sitemap_urls:
+        urls = fetch_urls_from_sitemap(sitemap_url)
+        for url in urls:
+            if url.endswith('.xml'):
+                all_urls.extend(fetch_urls_from_sitemap(url))
+            else:
+                all_urls.append(url)
+    return all_urls
+
 def generate_csv(urls):
     output = StringIO()
     writer = csv.writer(output)
@@ -38,9 +50,6 @@ def generate_csv(urls):
     return output.getvalue()
 
 def recup_urls(domain):
-    sitemap_urls = fetch_sitemap_urls(domain)
-    all_urls = []
-    for sitemap_url in sitemap_urls:
-        all_urls.extend(fetch_urls_from_sitemap(sitemap_url))
+    all_urls = fetch_all_urls(domain)
     csv_data = generate_csv(all_urls)
     return {"csv_data": csv_data}
