@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import logging
 import subprocess
+import json
 
 app = Flask(__name__)
 
@@ -11,23 +12,17 @@ def home():
     app.logger.debug("Home route accessed")
     return "Bienvenue à mon API Flask!"
 
-@app.route('/api/script1', methods=['GET'])
-def run_script1():
-    app.logger.debug("Script 1 route accessed")
-    result = subprocess.run(['python3', 'scripts/script1.py'], capture_output=True, text=True)
-    return jsonify({"output": result.stdout, "error": result.stderr})
-
-@app.route('/api/script2', methods=['GET'])
-def run_script2():
-    app.logger.debug("Script 2 route accessed")
-    result = subprocess.run(['python3', 'scripts/script2.py'], capture_output=True, text=True)
-    return jsonify({"output": result.stdout, "error": result.stderr})
-
-@app.route('/api/script3', methods=['GET'])
-def run_script3():
-    app.logger.debug("Script 3 route accessed")
-    result = subprocess.run(['python3', 'scripts/script3.py'], capture_output=True, text=True)
-    return jsonify({"output": result.stdout, "error": result.stderr})
+@app.route('/api/search', methods=['GET'])
+def run_search():
+    app.logger.debug("Search route accessed")
+    query = request.args.get('query')
+    if not query:
+        return jsonify({"error": "Missing query parameter"}), 400
+    result = subprocess.run(['python3', 'scripts/serp.py', query], capture_output=True, text=True)
+    if result.returncode != 0:
+        return jsonify({"error": result.stderr}), 500
+    response_data = json.loads(result.stdout)
+    return jsonify(response_data)
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
