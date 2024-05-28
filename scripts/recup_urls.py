@@ -1,57 +1,64 @@
 import requests
-from bs4 import BeautifulSoup
+import re
 import csv
+from xml.etree import ElementTree as ET
 from io import StringIO
 
-def fetch_sitemap_urls(domain):
-    robots_url = f"https://{domain}/robots.txt"
-    sitemap_url = f"https://{domain}/sitemap.xml"
-    print(f"Fetching sitemap URLs from {robots_url} and {sitemap_url}")
-    try:
-        response = requests.get(robots_url)
-        response.raise_for_status()
-        sitemap_urls = []
-        for line in response.text.splitlines():
-            if line.lower().startswith("sitemap:"):
-                sitemap_urls.append(line.split(":")[1].strip())
-        if not sitemap_urls:
-            sitemap_urls.append(sitemap_url)
-        print(f"Found sitemap URLs: {sitemap_urls}")
-        return sitemap_urls
-    except requests.RequestException as e:
-        print(f"Error fetching sitemap URLs: {e}")
-        return [sitemap_url]
-
-def fetch_urls_from_sitemap(sitemap_url):
-    print(f"Fetching URLs from sitemap {sitemap_url}")
-    try:
-        response = requests.get(sitemap_url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        urls = [loc.text for loc in soup.find_all('loc')]
-        print(f"Found URLs: {urls}")
-        return urls
-    except requests.RequestException as e:
-        print(f"Error fetching URLs from sitemap: {sitemap_url}, error: {e}")
+def get_sitemaps_from_robots(robots_url):
+    response = requests.get(robots_url)
+    if response.status_code != 200:
+        print(f"Erreur lors de la récupération du fichier robots.txt: {response.status_code}")
         return []
+    
+    sitemaps = re.findall(r'Sitemap\s*:\s*(https?://\S+)', response.text, re.IGNORECASE)
+    return sitemaps
+
+def get_urls_from_sitemap(sitemap_url):
+    response = requests.get(sitemap_url)
+    if response.status_code != 200:
+        print(f"Erreur lors de la récupération du sitemap: {response.status_code}")
+        return [], []
+    
+    urls = []
+    sitemaps = []
+    
+    try:
+        tree = ET.fromstring(response.content)
+        for elem in tree:
+            if elem.tag.endswith('url'):
+                for subelem in elem:
+                    if subelem.tag.endswith('loc'):
+                        urls.append(subelem.text)
+            elif elem.tag.endswith('sitemap'):
+                for subelem in elem:
+                    if subelem.tag.endswith('loc'):
+                        sitemaps.append(subelem.text)
+    except ET.ParseError as e:
+        print(f"Erreur lors de l'analyse du sitemap: {e}")
+    
+    return urls, sitemaps
 
 def fetch_all_urls(domain):
-    sitemap_urls = fetch_sitemap_urls(domain)
-    all_urls = []
-    for sitemap_url in sitemap_urls:
-        urls = fetch_urls_from_sitemap(sitemap_url)
-        for url in urls:
-            if url.endswith('.xml'):
-                all_urls.extend(fetch_urls_from_sitemap(url))
-            else:
-                all_urls.append(url)
-    print(f"All fetched URLs: {all_urls}")
-    return all_urls
+    robots_url = f"https://{domain}/robots.txt"
+    
+    sitemaps = get_sitemaps_from_robots(robots_url)
+    
+    if not sitemaps:
+        sitemaps.append(f"https://{domain}/sitemap.xml")
+    
+    all_urls = set()
+    while sitemaps:
+        sitemap = sitemaps.pop()
+        urls, nested_sitemaps = get_urls_from_sitemap(sitemap)
+        all_urls.update(urls)
+        sitemaps.extend(nested_sitemaps)
+    
+    return sorted(all_urls)
 
 def generate_csv(urls):
     output = StringIO()
     writer = csv.writer(output)
-    writer.writerow(["URL"])
+    writer.writerow(['URL'])
     for url in urls:
         writer.writerow([url])
     return output.getvalue()
