@@ -19,8 +19,12 @@ def get_urls():
     domain = request.args.get('domaine')
     if not domain:
         return jsonify({"error": "Missing query parameter 'domaine'"}), 400
-    result = recup_urls(domain)
-    return jsonify(result)
+    csv_data = recup_urls(domain)
+    return Response(
+        csv_data,
+        mimetype='text/csv',
+        headers={'Content-Disposition': 'attachment;filename=urls.csv'}
+    )
 
 @app.route('/api/analyse', methods=['POST'])
 def analyze_csv():
