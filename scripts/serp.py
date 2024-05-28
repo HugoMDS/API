@@ -1,7 +1,7 @@
-import requests
 from bs4 import BeautifulSoup
 import sys
 import json
+import requests
 
 def scrape_google(query):
     # Préparer l'URL de recherche
