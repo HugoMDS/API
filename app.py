@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, Response
 import logging
 from scripts.recup_urls import recup_urls
-from scripts.analyse_seo import process_csv
+from scripts.analyse_seo import analyze_and_report
 from scripts.serp import scrape_google
 
 app = Flask(__name__)
@@ -25,14 +25,13 @@ def get_urls():
         headers={'Content-Disposition': 'attachment;filename=urls.csv'}
     )
 
-@app.route('/api/analyse', methods=['POST'])
-def analyze_csv():
-    app.logger.debug("analyse_csv route accessed")
-    if 'csv_file' not in request.files:
-        return jsonify({"error": "Missing file parameter 'csv_file'"}), 400
-    file = request.files['csv_file']
-    input_csv = file.read().decode('utf-8')
-    result = process_csv(input_csv)
+@app.route('/api/analyse_seo', methods=['GET'])
+def analyze_url():
+    app.logger.debug("analyse_seo route accessed")
+    url = request.args.get('url')
+    if not url:
+        return jsonify({"error": "Missing query parameter 'url'"}), 400
+    result = analyze_and_report(url)
     return jsonify(result)
 
 @app.route('/api/search', methods=['GET'])
