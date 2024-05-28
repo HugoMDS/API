@@ -3,6 +3,7 @@ import logging
 import subprocess
 import json
 import sys
+import os
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -12,7 +13,7 @@ def install_dependencies():
     try:
         with open('/tmp/install_log.txt', 'w') as f:
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--upgrade', 'pip'], stdout=f, stderr=f)
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], stdout=f, stderr=f)
+            subprocess.check_call([sys.executable, '-m', 'pip3', 'install', '-r', 'requirements.txt'], stdout=f, stderr=f)
     except subprocess.CalledProcessError as e:
         print(f"Error installing dependencies: {e}")
         sys.exit(1)
@@ -31,7 +32,7 @@ def run_search():
     query = request.args.get('query')
     if not query:
         return jsonify({"error": "Missing query parameter"}), 400
-    result = subprocess.run(['python3', 'scripts/serp.py', query], capture_output=True, text=True)
+    result = subprocess.run([sys.executable, 'scripts/serp.py', query], capture_output=True, text=True)
     if result.returncode != 0:
         return jsonify({"error": result.stderr}), 500
     response_data = json.loads(result.stdout)
