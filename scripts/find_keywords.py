@@ -28,24 +28,3 @@ def analyze_page(url):
         print(f"Failed to analyze {url}: {str(e)}")
     
     return found_keywords
-
-# Fonction pour analyser des URLs à partir d'un fichier CSV
-def analyze_urls_from_csv(file_stream):
-    import csv
-    import io
-
-    results = {}
-    stream = io.StringIO(file_stream.read().decode("UTF8"), newline=None)
-    csv_reader = csv.reader(stream)
-    
-    urls = [row[0] for idx, row in enumerate(csv_reader) if idx != 0]  # Ignorer l'en-tête
-
-    # Analyser chaque URL et stocker les résultats
-    for url in urls:
-        keywords_found = analyze_page(url)
-        if keywords_found:
-            results[url] = {"status": "oui", "keywords": keywords_found}
-        else:
-            results[url] = {"status": "non", "keywords": []}
-
-    return results
