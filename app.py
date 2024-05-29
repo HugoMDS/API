@@ -3,6 +3,7 @@ import logging
 from scripts.recup_urls import recup_urls
 from scripts.analyse_seo import analyze_and_report
 from scripts.serp import scrape_google
+from scripts.find_keywords import analyze_urls_from_csv
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -42,6 +43,22 @@ def search_google():
         return jsonify({"error": "Missing query parameter 'query'"}), 400
     results = scrape_google(query)
     return jsonify(results)
+
+@app.route('/api/find_keywords', methods=['POST'])
+def find_keywords():
+    app.logger.debug("find_keywords route accessed")
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    try:
+        results = analyze_urls_from_csv(file)
+        return jsonify(results), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
