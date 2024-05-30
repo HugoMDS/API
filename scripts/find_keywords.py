@@ -59,10 +59,11 @@ def analyze_page(url):
                 for keyword in words:
                     if re.search(r'\b' + re.escape(keyword) + r'\b', texts, re.IGNORECASE):
                         category_keywords.append(keyword)
-                if category_keywords:
-                    found_keywords.append({"category": category, "status": "oui", "keywords": category_keywords})
-                else:
-                    found_keywords.append({"category": category, "status": "non", "keywords": []})
+                found_keywords.append({
+                    "category": category,
+                    "status": "oui" if category_keywords else "non",
+                    "keywords": category_keywords
+                })
             
             # Vérifier si au moins une catégorie contient des mots clés pour le statut général
             if any(category["status"] == "oui" for category in found_keywords):
