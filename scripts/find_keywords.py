@@ -43,7 +43,6 @@ keywords = {
 # Fonction pour analyser une page web
 def analyze_page(url):
     found_keywords = []
-    category_status = {"QVT": "non", "certifications": "non", "marque_employeur": "non"}
     general_status = "non"
     
     try:
@@ -62,15 +61,19 @@ def analyze_page(url):
                         category_keywords.append(keyword)
                 if category_keywords:
                     found_keywords.append({"category": category, "status": "oui", "keywords": category_keywords})
-                    category_status[category] = "oui"
                 else:
                     found_keywords.append({"category": category, "status": "non", "keywords": []})
             
-            # Vérifier si au moins un des tableaux n'est pas vide pour le statut général
-            if any(category_status[category] == "oui" for category in category_status):
+            # Vérifier si au moins une catégorie contient des mots clés pour le statut général
+            if any(category["status"] == "oui" for category in found_keywords):
                 general_status = "oui"
     
     except Exception as e:
         print(f"Failed to analyze {url}: {str(e)}")
     
-    return {"keywords": found_keywords, "category_status": category_status, "general_status": general_status}
+    return {"keywords": found_keywords, "status": general_status}
+
+# Exemple d'utilisation
+url = "https://www.example.com"
+result = analyze_page(url)
+print(result)
