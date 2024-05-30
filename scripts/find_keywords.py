@@ -42,7 +42,7 @@ keywords = {
 
 # Fonction pour analyser une page web
 def analyze_page(url):
-    found_keywords = {"QVT": [], "certifications": [], "marque_employeur": []}
+    found_keywords = []
     category_status = {"QVT": "non", "certifications": "non", "marque_employeur": "non"}
     general_status = "non"
     
@@ -56,14 +56,18 @@ def analyze_page(url):
             
             # Rechercher les mots-clés dans le texte par catégorie
             for category, words in keywords.items():
+                category_keywords = []
                 for keyword in words:
                     if re.search(r'\b' + re.escape(keyword) + r'\b', texts, re.IGNORECASE):
-                        found_keywords[category].append(keyword)
-                if found_keywords[category]:
+                        category_keywords.append(keyword)
+                if category_keywords:
+                    found_keywords.append({"category": category, "status": "oui", "keywords": category_keywords})
                     category_status[category] = "oui"
+                else:
+                    found_keywords.append({"category": category, "status": "non", "keywords": []})
             
             # Vérifier si au moins un des tableaux n'est pas vide pour le statut général
-            if any(found_keywords[category] for category in found_keywords):
+            if any(category_status[category] == "oui" for category in category_status):
                 general_status = "oui"
     
     except Exception as e:
