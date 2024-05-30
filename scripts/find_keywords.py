@@ -43,6 +43,7 @@ keywords = {
 # Fonction pour analyser une page web
 def analyze_page(url):
     found_keywords = {"QVT": [], "certifications": [], "marque_employeur": []}
+    status = "non"
     try:
         response = requests.get(url)
         if response.status_code == 200:
@@ -56,8 +57,12 @@ def analyze_page(url):
                 for keyword in words:
                     if re.search(r'\b' + re.escape(keyword) + r'\b', texts, re.IGNORECASE):
                         found_keywords[category].append(keyword)
+            
+            # Vérifier si au moins un des tableaux n'est pas vide
+            if any(found_keywords[category] for category in found_keywords):
+                status = "oui"
     
     except Exception as e:
         print(f"Failed to analyze {url}: {str(e)}")
     
-    return found_keywords
+    return {"status": status, "keywords": found_keywords}
