@@ -64,4 +64,4 @@ def analyze_page(url):
         print(f"Failed to analyze {url}: {str(e)}")
         status = "non"
     
-    return {"status": status, "keywords": found_keywords}
+    return {"keywords": found_keywords, "status": status}
