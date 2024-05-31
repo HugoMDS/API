@@ -99,7 +99,28 @@ def api_pdf_to_text():
 def random_word():
     app.logger.debug("random_word route accessed")
     chosen_word = choose_random_word()
-    html_content = f"<html><body><h1>{chosen_word}</h1></body></html>"
+    html_content = f"""
+    <html>
+        <head>
+            <style>
+                body {{
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                }}
+                h1 {{
+                    font-size: 10vw;
+                    color: {chosen_word};
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>{chosen_word}</h1>
+        </body>
+    </html>
+    """
     return html_content, 200
 
 if __name__ == '__main__':
