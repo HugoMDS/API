@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request
 import logging
 from io import BytesIO
 from scripts.recup_urls import recup_urls  # Assurez-vous que le chemin est correct
