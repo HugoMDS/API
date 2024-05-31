@@ -4,6 +4,7 @@ from scripts.recup_urls import recup_urls
 from scripts.analyse_seo import analyze_and_report
 from scripts.serp import scrape_google
 from scripts.find_keywords import analyze_page
+from scripts.detect_wordpress import is_wordpress_site
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -12,6 +13,15 @@ logging.basicConfig(level=logging.DEBUG)
 def home():
     app.logger.debug("Home route accessed")
     return "Bienvenue à mon API Flask!"
+
+@app.route('/api/check_wordpress', methods=['GET'])
+def check_wordpress():
+    app.logger.debug("check_wordpress route accessed")
+    url = request.args.get('url')
+    if not url:
+        return jsonify({"error": "Missing query parameter 'url'"}), 400
+    wordpress_status = is_wordpress_site(url)
+    return jsonify({"wordpress": str(wordpress_status).lower()}), 200
 
 @app.route('/api/recup_urls', methods=['GET'])
 def get_urls():
