@@ -1,4 +1,4 @@
-# pdf_utils.py
+# scripts/pdf_utils.py
 import requests
 import PyPDF2
 from io import BytesIO

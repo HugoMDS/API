@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request
 import logging
 from io import BytesIO
-from scripts.recup_urls import recup_urls  # Assurez-vous que le chemin est correct
-from scripts.analyse_seo import analyze_and_report  # Assurez-vous que le chemin est correct
-from scripts.serp import scrape_google  # Assurez-vous que le chemin est correct
-from scripts.find_keywords import analyze_page  # Assurez-vous que le chemin est correct
-from scripts.detect_wordpress import is_wordpress_site  # Assurez-vous que le chemin est correct
-from scripts.pdf_utils import download_pdf, pdf_to_text  # Importez les fonctions du script pdf_utils
+from scripts.recup_urls import recup_urls
+from scripts.analyse_seo import analyze_and_report
+from scripts.serp import scrape_google
+from scripts.find_keywords import analyze_page
+from scripts.detect_wordpress import is_wordpress_site
+from scripts.pdf_utils import pdf_to_text
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -76,15 +76,8 @@ def find_keywords():
 
 @app.route('/api/pdf_to_text', methods=['POST'])
 def api_pdf_to_text():
-    if 'url' in request.json:
-        url = request.json['url']
-        try:
-            pdf_file = download_pdf(url)
-            text = pdf_to_text(pdf_file)
-            return jsonify({"text": text}), 200
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-    elif 'file' in request.files:
+    # Check if 'file' is in request files (multipart/form-data)
+    if 'file' in request.files:
         file = request.files['file']
         try:
             pdf_file = BytesIO(file.read())
@@ -92,8 +85,16 @@ def api_pdf_to_text():
             return jsonify({"text": text}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
+    # Check if binary data is sent in the body (application/octet-stream)
+    elif request.data:
+        try:
+            pdf_file = BytesIO(request.data)
+            text = pdf_to_text(pdf_file)
+            return jsonify({"text": text}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
     else:
-        return jsonify({"error": "Missing 'url' in JSON payload or PDF file in form-data"}), 400
+        return jsonify({"error": "Missing 'file' in form-data or binary data in request body"}), 400
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
