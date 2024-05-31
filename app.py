@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request, Response
 import logging
-from scripts.recup_urls import recup_urls
-from scripts.analyse_seo import analyze_and_report
-from scripts.serp import scrape_google
-from scripts.find_keywords import analyze_page
-from scripts.detect_wordpress import is_wordpress_site
+from scripts.recup_urls import recup_urls  # Assurez-vous que le chemin est correct
+from scripts.analyse_seo import analyze_and_report  # Assurez-vous que le chemin est correct
+from scripts.serp import scrape_google  # Assurez-vous que le chemin est correct
+from scripts.find_keywords import analyze_page  # Assurez-vous que le chemin est correct
+from scripts.detect_wordpress import is_wordpress_site  # Assurez-vous que le chemin est correct
+from scripts.pdf_utils import download_pdf, pdf_to_text  # Importez les fonctions du script pdf_utils
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -71,6 +72,27 @@ def find_keywords():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/pdf_to_text', methods=['POST'])
+def api_pdf_to_text():
+    if 'url' in request.json:
+        url = request.json['url']
+        try:
+            pdf_file = download_pdf(url)
+            text = pdf_to_text(pdf_file)
+            return jsonify({"text": text}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    elif 'file' in request.files:
+        file = request.files['file']
+        try:
+            pdf_file = BytesIO(file.read())
+            text = pdf_to_text(pdf_file)
+            return jsonify({"text": text}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"error": "Missing 'url' in JSON payload or PDF file in form-data"}), 400
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
