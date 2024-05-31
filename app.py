@@ -7,7 +7,7 @@ from scripts.serp import scrape_google  # Assurez-vous que le chemin est correct
 from scripts.find_keywords import analyze_page  # Assurez-vous que le chemin est correct
 from scripts.detect_wordpress import is_wordpress_site  # Assurez-vous que le chemin est correct
 from scripts.pdf_utils import pdf_to_text  # Assurez-vous que le chemin est correct
-from scripts.random_word import choose_random_word  # Importation depuis le script random_word
+from scripts.hasard import choose_random_word  # Importation depuis le script random_word
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
