@@ -76,7 +76,6 @@ def find_keywords():
 
 @app.route('/api/pdf_to_text', methods=['POST'])
 def api_pdf_to_text():
-    # Check if 'file' is in request files (multipart/form-data)
     if 'file' in request.files:
         file = request.files['file']
         try:
@@ -85,8 +84,7 @@ def api_pdf_to_text():
             return jsonify({"text": text}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
-    # Check if binary data is sent in the body (application/octet-stream)
-    elif request.data:
+    elif request.content_type == 'application/octet-stream':
         try:
             pdf_file = BytesIO(request.data)
             text = pdf_to_text(pdf_file)
