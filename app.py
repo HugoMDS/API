@@ -103,17 +103,17 @@ def random_word():
     <html>
         <head>
             <style>
-                body {
+                body {{
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     height: 100vh;
                     margin: 0;
-                }
-                h1 {
+                }}
+                h1 {{
                     font-size: 10vw;
                     color: {chosen_word};
-                }
+                }}
             </style>
         </head>
         <body>
