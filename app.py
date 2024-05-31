@@ -1,12 +1,13 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 import logging
 from io import BytesIO
-from scripts.recup_urls import recup_urls
-from scripts.analyse_seo import analyze_and_report
-from scripts.serp import scrape_google
-from scripts.find_keywords import analyze_page
-from scripts.detect_wordpress import is_wordpress_site
-from scripts.pdf_utils import pdf_to_text
+from scripts.recup_urls import recup_urls  # Assurez-vous que le chemin est correct
+from scripts.analyse_seo import analyze_and_report  # Assurez-vous que le chemin est correct
+from scripts.serp import scrape_google  # Assurez-vous que le chemin est correct
+from scripts.find_keywords import analyze_page  # Assurez-vous que le chemin est correct
+from scripts.detect_wordpress import is_wordpress_site  # Assurez-vous que le chemin est correct
+from scripts.pdf_utils import pdf_to_text  # Assurez-vous que le chemin est correct
+from scripts.random_word import choose_random_word  # Importation depuis le script random_word
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -93,6 +94,13 @@ def api_pdf_to_text():
             return jsonify({"error": str(e)}), 500
     else:
         return jsonify({"error": "Missing 'file' in form-data or binary data in request body"}), 400
+
+@app.route('/api/random_word', methods=['GET'])
+def random_word():
+    app.logger.debug("random_word route accessed")
+    chosen_word = choose_random_word()
+    html_content = f"<html><body><h1>{chosen_word}</h1></body></html>"
+    return html_content, 200
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
