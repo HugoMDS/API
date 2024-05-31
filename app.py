@@ -6,7 +6,7 @@ from scripts.analyse_seo import analyze_and_report  # Assurez-vous que le chemin
 from scripts.serp import scrape_google  # Assurez-vous que le chemin est correct
 from scripts.find_keywords import analyze_page  # Assurez-vous que le chemin est correct
 from scripts.detect_wordpress import is_wordpress_site  # Assurez-vous que le chemin est correct
-from pdf_utils import download_pdf, pdf_to_text  # Importez les fonctions du script pdf_utils
+from scripts.pdf_utils import download_pdf, pdf_to_text  # Importez les fonctions du script pdf_utils
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
