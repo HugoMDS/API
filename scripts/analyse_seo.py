@@ -27,63 +27,63 @@ def seo_audit(url, content):
 
     # Erreurs
     errors = {
-        'erreur': [],
-        'avertissement': [],
-        'avis': []
+        'erreur': {},
+        'avertissement': {},
+        'avis': {}
     }
 
     if len(h1_tags) > 1:
-        errors['erreur'].append('multiple_h1')
+        errors['erreur']['multiple_h1'] = 'multiple_h1'
     if len(h1_tags) == 0:
-        errors['erreur'].append('missing_h1')
+        errors['erreur']['missing_h1'] = 'missing_h1'
     if len(h2_tags) > 0 and len(h1_tags) == 0:
-        errors['erreur'].append('h2_without_h1')
+        errors['erreur']['h2_without_h1'] = 'h2_without_h1'
     if word_count < 200:
-        errors['erreur'].append('low_word_count')
+        errors['erreur']['low_word_count'] = 'low_word_count'
     if title_tag is None:
-        errors['erreur'].append('missing_title')
+        errors['erreur']['missing_title'] = 'missing_title'
     if len(links) == 0:
-        errors['erreur'].append('no_links')
+        errors['erreur']['no_links'] = 'no_links'
 
     if len(h2_tags) == 0:
-        errors['avertissement'].append('missing_h2')
+        errors['avertissement']['missing_h2'] = 'missing_h2'
     if len(h3_tags) > 0 and len(h2_tags) == 0:
-        errors['avertissement'].append('h3_without_h2')
+        errors['avertissement']['h3_without_h2'] = 'h3_without_h2'
     if title_tag and len(title_tag.text) > 70:
-        errors['avertissement'].append('title_too_long')
+        errors['avertissement']['title_too_long'] = 'title_too_long'
     if description_tag is None:
-        errors['avertissement'].append('missing_description')
+        errors['avertissement']['missing_description'] = 'missing_description'
     if description_tag and len(description_tag.get('content', '')) > 160:
-        errors['avertissement'].append('description_too_long')
+        errors['avertissement']['description_too_long'] = 'description_too_long'
     if canonical_tag is None:
-        errors['avertissement'].append('missing_canonical')
+        errors['avertissement']['missing_canonical'] = 'missing_canonical'
     if len(internal_links) == 0:
-        errors['avertissement'].append('no_internal_links')
+        errors['avertissement']['no_internal_links'] = 'no_internal_links'
 
     if len(h3_tags) == 0:
-        errors['avis'].append('missing_h3')
+        errors['avis']['missing_h3'] = 'missing_h3'
     if len(h4_tags) > 0 and len(h3_tags) == 0:
-        errors['avis'].append('h4_without_h3')
+        errors['avis']['h4_without_h3'] = 'h4_without_h3'
     if len(h5_tags) > 0 and len(h4_tags) == 0:
-        errors['avis'].append('h5_without_h4')
+        errors['avis']['h5_without_h4'] = 'h5_without_h4'
     if len(h6_tags) > 0 and len(h5_tags) == 0:
-        errors['avis'].append('h6_without_h5')
+        errors['avis']['h6_without_h5'] = 'h6_without_h5'
     if title_tag and len(title_tag.text) < 20:
-        errors['avis'].append('title_too_short')
+        errors['avis']['title_too_short'] = 'title_too_short'
     if description_tag and len(description_tag.get('content', '')) < 50:
-        errors['avis'].append('description_too_short')
+        errors['avis']['description_too_short'] = 'description_too_short'
     if len(url) > 70:
-        errors['avis'].append('url_too_long')
+        errors['avis']['url_too_long'] = 'url_too_long'
     if canonical_tag and len(canonical_tag.get('href', '')) > 70:
-        errors['avis'].append('canonical_too_long')
+        errors['avis']['canonical_too_long'] = 'canonical_too_long'
     if len(images) == 0:
-        errors['avis'].append('no_images')
+        errors['avis']['no_images'] = 'no_images'
     if any(img.get('alt') is None for img in images):
-        errors['avis'].append('missing_alt')
+        errors['avis']['missing_alt'] = 'missing_alt'
     if any(img.get('alt') == '' for img in images):
-        errors['avis'].append('empty_alt')
+        errors['avis']['empty_alt'] = 'empty_alt'
     if len(external_links) == 0:
-        errors['avis'].append('no_external_links')
+        errors['avis']['no_external_links'] = 'no_external_links'
 
     return errors
 
