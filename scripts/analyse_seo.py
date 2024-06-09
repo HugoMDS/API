@@ -95,12 +95,6 @@ def analyze_and_report(url):
         errors = seo_audit(url, content)
         if not any(errors.values()):
             return {"errors": ["aucune erreur n'a été détectée"]}
-        # Convert errors dictionary to arrays
-        errors_array = {
-            "erreur": [{e: e} for e in errors["erreur"]],
-            "avertissement": [{e: e} for e in errors["avertissement"]],
-            "avis": [{e: e} for e in errors["avis"]]
-        }
-        return {"errors": errors_array}
+        return {"errors": errors}
     except requests.RequestException as e:
         return {"errors": [f"Request error: {str(e)}"]}
