@@ -1,13 +1,14 @@
 from flask import Flask, jsonify, request, Response
 import logging
 from io import BytesIO
-from scripts.recup_urls import recup_urls  # Assurez-vous que le chemin est correct
-from scripts.analyse_seo import analyze_and_report  # Assurez-vous que le chemin est correct
-from scripts.serp import scrape_google  # Assurez-vous que le chemin est correct
-from scripts.find_keywords import analyze_page  # Assurez-vous que le chemin est correct
-from scripts.detect_wordpress import is_wordpress_site  # Assurez-vous que le chemin est correct
-from scripts.pdf_utils import pdf_to_text  # Assurez-vous que le chemin est correct
-from scripts.hasard import choose_random_word  # Importation depuis le script random_word
+from scripts.recup_urls import recup_urls
+from scripts.analyse_seo import analyze_and_report
+from scripts.serp import scrape_google
+from scripts.find_keywords import analyze_page
+from scripts.detect_wordpress import is_wordpress_site
+from scripts.pdf_utils import pdf_to_text
+from scripts.hasard import choose_random_word
+from scripts.ics_converter import text_to_ics  # Import the new script
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -122,6 +123,21 @@ def random_word():
     </html>
     """
     return html_content, 200
+
+@app.route('/api/text_to_ics', methods=['POST'])
+def text_to_ics_api():
+    app.logger.debug("text_to_ics route accessed")
+    ics_text = request.data.decode('utf-8')
+    if not ics_text:
+        return jsonify({"error": "Missing ICS text in request body"}), 400
+    
+    ics_data = text_to_ics(ics_text)
+    response = Response(
+        ics_data,
+        mimetype='text/calendar',
+        headers={'Content-Disposition': 'attachment;filename=calendar.ics'}
+    )
+    return response, 200
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
