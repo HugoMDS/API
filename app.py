@@ -134,7 +134,7 @@ def text_to_ics_api():
     ics_data = text_to_ics(ics_text)
     response = Response(
         ics_data,
-        mimetype='text/calendar',
+        mimetype='application/octet-stream',
         headers={'Content-Disposition': 'attachment;filename=calendar.ics'}
     )
     return response, 200
