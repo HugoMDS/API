@@ -17,7 +17,7 @@ def verifier_disponibilite(ndd):
         driver.get(url)
 
         # Attendre le chargement de la page
-        time.sleep(2)  # Ajustez ce délai si nécessaire
+        time.sleep(1)  # Ajustez ce délai si nécessaire
 
         # Vérifier le contenu de la page pour déterminer la disponibilité
         if "is available!" in driver.page_source:
