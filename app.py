@@ -9,6 +9,7 @@ from scripts.detect_wordpress import is_wordpress_site
 from scripts.pdf_utils import pdf_to_text
 from scripts.hasard import choose_random_word
 from scripts.ics_converter import text_to_ics  # Import the new script
+from scripts.check_domain import verifier_disponibilite  # Import the new script
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -138,6 +139,19 @@ def text_to_ics_api():
         headers={'Content-Disposition': 'attachment;filename=calendar.ics'}
     )
     return response, 200
+
+@app.route('/api/check_domain', methods=['GET'])
+def check_domain():
+    app.logger.debug("check_domain route accessed")
+    domain = request.args.get('domain')
+    if not domain:
+        return jsonify({"error": "Missing query parameter 'domain'"}), 400
+
+    try:
+        result = verifier_disponibilite(domain)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
