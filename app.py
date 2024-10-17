@@ -59,24 +59,6 @@ def search_google():
     results = scrape_google(query)
     return jsonify(results)
 
-@app.route('/api/find_keywords', methods=['GET'])
-def find_keywords():
-    app.logger.debug("find_keywords route accessed")
-    url = request.args.get('url')
-    if not url:
-        return jsonify({"error": "Missing query parameter 'url'"}), 400
-
-    try:
-        keywords_found = analyze_page(url)
-        if keywords_found:
-            result = {"status": "oui", "keywords": keywords_found}
-        else:
-            result = {"status": "non", "keywords": []}
-        return jsonify(result), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 @app.route('/api/pdf_to_text', methods=['POST'])
 def api_pdf_to_text():
     if 'file' in request.files:
@@ -139,19 +121,6 @@ def text_to_ics_api():
         headers={'Content-Disposition': 'attachment;filename=calendar.ics'}
     )
     return response, 200
-
-@app.route('/api/check_domain', methods=['GET'])
-def check_domain():
-    app.logger.debug("check_domain route accessed")
-    domain = request.args.get('domain')
-    if not domain:
-        return jsonify({"error": "Missing query parameter 'domain'"}), 400
-
-    try:
-        result = verifier_disponibilite(domain)
-        return jsonify(result), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
