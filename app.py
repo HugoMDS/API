@@ -4,12 +4,10 @@ from io import BytesIO
 from scripts.recup_urls import recup_urls
 from scripts.analyse_seo import analyze_and_report
 from scripts.serp import scrape_google
-from scripts.find_keywords import analyze_page
 from scripts.detect_wordpress import is_wordpress_site
 from scripts.pdf_utils import pdf_to_text
 from scripts.hasard import choose_random_word
 from scripts.ics_converter import text_to_ics  # Import the new script
-from scripts.check_domain import verifier_disponibilite  # Import the new script
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
