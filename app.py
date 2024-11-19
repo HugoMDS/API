@@ -122,11 +122,11 @@ def text_to_ics_api():
     )
     return response, 200
 
-
 # Endpoint pour compresser un fichier audio
 @app.route('/compress_audio', methods=['POST'])
 def handle_compress_audio():
     return compress_audio()
+
 
 @app.route('/slice_audio', methods=['POST'])
 def handle_slice_audio():
