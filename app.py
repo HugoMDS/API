@@ -10,6 +10,7 @@ from scripts.hasard import choose_random_word
 from scripts.ics_converter import text_to_ics  # Import the new script
 from scripts.process_audio import compress_audio
 from scripts.slice_audio import slice_audio
+from scripts.generate_pdf import generate_pdf_from_html
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -131,6 +132,24 @@ def handle_compress_audio():
 @app.route('/slice_audio', methods=['POST'])
 def handle_slice_audio():
     return slice_audio()
+
+@app.route('/generate-pdf', methods=['POST'])
+def generate_pdf():
+    try:
+        # Récupérer le HTML envoyé dans la requête
+        data = request.get_json()
+        if 'html' not in data:
+            return jsonify({"error": "HTML content is required"}), 400
+
+        html_content = data['html']
+
+        # Générer le PDF
+        pdf_buffer = generate_pdf_from_html(html_content)
+
+        # Retourner le PDF directement
+        return send_file(pdf_buffer, mimetype='application/pdf', as_attachment=True, download_name="generated.pdf")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.logger.debug("Starting the Flask app")
